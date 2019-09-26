@@ -4,9 +4,9 @@
 %table#movies.table.table-striped.col-md-12
   %thead
     %tr
-      %th Movie Title
+      %th{:class => (params[:orderBy] == 'title' ? "hilite" : "")}=link_to('Movie Title', {"orderBy" => "title","action"=>"index","controller"=>"movies"}, :id => 'title_header')
       %th Rating
-      %th Release Date
+      %th{:class => (params[:orderBy] == 'date' ? "hilite" : "")}=link_to('Release Date', {"orderBy" => "date","action"=>"index","controller"=>"movies"}, :id => 'release_date_header')
       %th More Info
   %tbody
     - @movies.each do |movie|
