@@ -12,14 +12,11 @@ class MoviesController < ApplicationController
 
   def index
     orderBy = params[:orderBy] #retrieve order
-    if orderBy == 'title'
-      @movies = Movie.all.order(:title)
-    elsif orderBy == 'date'
-      @movies = Movie.all.order(:release_date)
-    else
-      @movies = Movie.all
-    end
-    @movies
+    ratings = params[:ratings] #retrieve ratings
+    @movies = Movie.with_rating!(Movie.all, ratings)
+    @movies = Movie.order_movies!(@movies, orderBy)
+    @all_ratings = Movie.get_all_ratings()
+    @selected_ratings = Movie.extract_ratings_from_hash(ratings)
   end
 
   def new
