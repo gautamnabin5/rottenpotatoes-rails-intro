@@ -11,12 +11,26 @@ class MoviesController < ApplicationController
   end
 
   def index
-    orderBy = params[:orderBy] #retrieve order
-    ratings = params[:ratings] #retrieve ratings
-    @movies = Movie.with_rating!(Movie.all, ratings)
-    @movies = Movie.order_movies!(@movies, orderBy)
+    orderBy = params[:orderBy] == nil ? session[:orderBy] : params[:orderBy] #retrieve order
+    ratings = params[:ratings] == nil ? session[:ratings] : params[:ratings] #retrieve ratings
+    @movies = Movie.with_rating!(Movie.all, ratings) # filter by rating first
+    @movies = Movie.order_movies!(@movies, orderBy) # then order the list
     @all_ratings = Movie.get_all_ratings()
     @selected_ratings = Movie.extract_ratings_from_hash(ratings)
+    @sort_order = orderBy
+    # update session
+    needsUrlChange = false
+    if(session[:orderBy] != params[:orderBy])
+      session[:orderBy] = params[:orderBy] if params[:orderBy] != nil
+      needsUrlChange = true
+    end
+    if (session[:ratings] != params[:ratings])
+      session[:ratings] = params[:ratings] if params[:ratings] != nil
+      needsUrlChange = true
+    end
+    if needsUrlChange
+      redirect_to action: "index", orderBy: session[:orderBy], ratings: session[:ratings]
+    end
   end
 
   def new
